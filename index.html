@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr C's Research Essay Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better UX */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .tab-button.active { background-color: #3b82f6; color: white; }
+        
+        /* Style for placeholder text */
+        ::placeholder { color: #cbd5e1; opacity: 1; }
+
+        textarea { resize: vertical; }
+
+        /* Styles for the live editor */
+        #liveEditor {
+            min-height: 500px;
+            padding: 1rem;
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.75rem; /* leading-relaxed */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 0.375rem; /* rounded-md */
+        }
+
+        #liveEditor:focus {
+             outline: 2px solid #3b82f6;
+        }
+
+        #liveEditor span {
+            padding: 1px 0;
+            border-radius: 3px;
+        }
+
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900">
+
+    <div class="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-slate-800">Mr C's Research Essay Planner 📝</h1>
+            <p class="text-slate-600 mt-2">A tool to help plan, draft, and analyze academic essays.</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="mb-6 border-b border-slate-300">
+            <nav class="flex space-x-2" aria-label="Tabs">
+                <button id="tab-btn-1" class="tab-button active text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">1. Budget & Structure</button>
+                <button id="tab-btn-2" class="tab-button text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">2. Drafting (PEEAR)</button>
+                <button id="tab-btn-3" class="tab-button text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">3. Analysis & Refine</button>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <main>
+            <!-- ## Tab 1: Budget & Structure ## -->
+            <div id="tab-content-1" class="tab-content space-y-8">
+                <!-- Word Count Budgeter -->
+                <section class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Word Count Budget</h2>
+                    <div class="flex items-end space-x-4">
+                        <div>
+                            <label for="wordCountGoal" class="block text-sm font-medium text-slate-700">Total Word Count Goal</label>
+                            <input type="number" id="wordCountGoal" value="1000" class="mt-1 block w-48 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <button id="recalculateButton" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Recalculate</button>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                        <div class="bg-slate-50 p-3 rounded-md">
+                            <h3 class="font-bold">Introduction (12%)</h3>
+                            <p id="introBudget" class="text-lg text-blue-700 font-mono">120 words</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-md">
+                            <h3 class="font-bold">Body 1 (26%)</h3>
+                            <p id="body1Budget" class="text-lg text-blue-700 font-mono">260 words</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-md">
+                            <h3 class="font-bold">Body 2 (26%)</h3>
+                            <p id="body2Budget" class="text-lg text-blue-700 font-mono">260 words</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-md">
+                            <h3 class="font-bold">Body 3 (26%)</h3>
+                            <p id="body3Budget" class="text-lg text-blue-700 font-mono">260 words</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-md">
+                            <h3 class="font-bold">Conclusion (10%)</h3>
+                            <p id="conclusionBudget" class="text-lg text-blue-700 font-mono">100 words</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Argument & Source Planning -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Argument Planning -->
+                    <section class="bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Argument Planning</h2>
+                        <div class="space-y-4">
+                             <div>
+                                <label for="subject" class="block text-sm font-medium text-slate-700">Subject</label>
+                                <input type="text" id="subject" class="mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., Modern History">
+                            </div>
+                             <div>
+                                <label for="taskPrompt" class="block text-sm font-medium text-slate-700">Task</label>
+                                <textarea id="taskPrompt" rows="2" class="mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Despite his fame, should Ned Kelly be considered a hero, villain or victim?"></textarea>
+                            </div>
+                            <div>
+                                <label for="argument1" class="block text-sm font-medium text-slate-700">Argument 1 (for Body Paragraph 1)</label>
+                                <textarea id="argument1" rows="3" class="mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="From a historical perspective, Ned Kelly should be seen as a villain because of the danger his crimes created for ordinary people."></textarea>
+                            </div>
+                            <div>
+                                <label for="argument2" class="block text-sm font-medium text-slate-700">Argument 2 (for Body Paragraph 2)</label>
+                                <textarea id="argument2" rows="3" class="mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Thesis point for your second body paragraph."></textarea>
+                            </div>
+                            <div>
+                                <label for="argument3" class="block text-sm font-medium text-slate-700">Argument 3 (for Body Paragraph 3)</label>
+                                <textarea id="argument3" rows="3" class="mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Thesis point for your third body paragraph."></textarea>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- IOPCAM Source Analysis -->
+                    <section class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-center border-b pb-2 mb-4">
+                            <h2 class="text-2xl font-semibold">IOPCAM Source Analysis</h2>
+                            <button id="addSourceButton" class="bg-green-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-700 transition-colors">+ Add Source</button>
+                        </div>
+                        <div id="sourcesContainer" class="space-y-6">
+                            <!-- Dynamically added sources will appear here -->
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ## Tab 2: Drafting (PEEAR) ## -->
+            <div id="tab-content-2" class="tab-content hidden space-y-6">
+                <!-- Introduction -->
+                <section class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-baseline border-b pb-2 mb-4">
+                        <h2 class="text-2xl font-semibold">Introduction</h2>
+                        <p class="font-mono text-sm font-semibold" id="introTotalCounter">0 / 120</p>
+                    </div>
+                    <div id="intro-alert" class="hidden mb-4 p-3 bg-red-100 text-red-800 font-bold text-center rounded-md"></div>
+                    <div class="space-y-4">
+                        <div>
+                            <textarea id="introH" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Hook: Outlaws often capture the imagination, but fascination should not be mistaken for heroism."></textarea>
+                            <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">H</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="introH">0 / 30</span></div>
+                        </div>
+                         <div>
+                            <textarea id="introC" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Context: In nineteenth-century Australia, Ned Kelly became famous as a bushranger whose life has been told and retold in books, films, and classrooms. While some admire him as a symbol of resistance against authority, the reality of his actions reveals a much darker legacy."></textarea>
+                             <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">C</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="introC">0 / 50</span></div>
+                        </div>
+                         <div>
+                            <textarea id="introT" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Thesis: Ned Kelly deserves to be remembered as a villain because his robberies endangered communities, his choices caused needless deaths, and his violent behaviour undermined any claim to justice."></textarea>
+                             <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">T</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="introT">0 / 40</span></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Body Paragraphs -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Body 1 -->
+                    <section class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-baseline border-b pb-2 mb-4">
+                            <h2 class="text-xl font-semibold">Body Paragraph 1</h2>
+                            <p class="font-mono text-sm font-semibold" id="body1TotalCounter">0 / 260</p>
+                        </div>
+                        <div id="body1-alert" class="hidden mb-4 p-3 bg-red-100 text-red-800 font-bold text-center rounded-md"></div>
+                        <div class="space-y-4">
+                            <div>
+                                <textarea id="body1P" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Throughout his life, Ned Kelly's actions consistently demonstrated a disregard for the law, marking him as a villain."></textarea>
+                                <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">P</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body1P">0 / 30</span></div>
+                                <div id="argument-display-1" class="mt-2 p-2 bg-slate-50 text-slate-600 text-xs rounded-md hidden"></div>
+                            </div>
+                            <div><textarea id="body1E1" rows="5" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Explain: To begin with, Kelly repeatedly engaged in armed robberies that placed innocent people in danger. These robberies were not harmless adventures; they involved loaded weapons, threats, and intimidation..."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">E</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body1E1">0 / 80</span></div></div>
+                            <div><textarea id="body1E2" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Evidence: NOTE THE API REFERENCING AND PUNCTUATION: Historians note that “Kelly and his gang held up banks at gunpoint, terrifying townsfolk” (McQuilton, 2001, p. 77)..."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">E</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body1E2">0 / 60</span></div></div>
+                            <div><textarea id="body1A" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Analyze: Clearly Kelly’s behaviour was not heroic resistance but deliberate lawlessness..."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">A</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body1A">0 / 60</span></div></div>
+                            <div><textarea id="body1R" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Reinforce: Therefore, Ned Kelly must be remembered as a villain because his robberies left behind fear, violence, and destruction..."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">R</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body1R">0 / 30</span></div></div>
+                        </div>
+                    </section>
+                    <!-- Body 2 -->
+                     <section class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-baseline border-b pb-2 mb-4">
+                            <h2 class="text-xl font-semibold">Body Paragraph 2</h2>
+                            <p class="font-mono text-sm font-semibold" id="body2TotalCounter">0 / 260</p>
+                        </div>
+                        <div id="body2-alert" class="hidden mb-4 p-3 bg-red-100 text-red-800 font-bold text-center rounded-md"></div>
+                        <div class="space-y-4">
+                            <div>
+                                <textarea id="body2P" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Write your point/argument for this paragraph here."></textarea>
+                                <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">P</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body2P">0 / 30</span></div>
+                                <div id="argument-display-2" class="mt-2 p-2 bg-slate-50 text-slate-600 text-xs rounded-md hidden"></div>
+                            </div>
+                            <div><textarea id="body2E1" rows="5" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Explain how the point relates to the topic/thesis."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">E</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body2E1">0 / 80</span></div></div>
+                            <div><textarea id="body2E2" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Provide evidence (quote, fact, data)."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">E</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body2E2">0 / 60</span></div></div>
+                            <div><textarea id="body2A" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Analyze the evidence. How does it prove your point?"></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">A</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body2A">0 / 60</span></div></div>
+                            <div><textarea id="body2R" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Reinforce the point and link back to the thesis."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">R</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body2R">0 / 30</span></div></div>
+                        </div>
+                    </section>
+                    <!-- Body 3 -->
+                    <section class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-baseline border-b pb-2 mb-4">
+                            <h2 class="text-xl font-semibold">Body Paragraph 3</h2>
+                            <p class="font-mono text-sm font-semibold" id="body3TotalCounter">0 / 260</p>
+                        </div>
+                        <div id="body3-alert" class="hidden mb-4 p-3 bg-red-100 text-red-800 font-bold text-center rounded-md"></div>
+                        <div class="space-y-4">
+                           <div>
+                                <textarea id="body3P" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Write your point/argument for this paragraph here."></textarea>
+                                <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">P</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body3P">0 / 30</span></div>
+                                <div id="argument-display-3" class="mt-2 p-2 bg-slate-50 text-slate-600 text-xs rounded-md hidden"></div>
+                           </div>
+                            <div><textarea id="body3E1" rows="5" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Explain how the point relates to the topic/thesis."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">E</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body3E1">0 / 80</span></div></div>
+                            <div><textarea id="body3E2" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Provide evidence (quote, fact, data)."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">E</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body3E2">0 / 60</span></div></div>
+                            <div><textarea id="body3A" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Analyse the evidence. How does it prove your point?"></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">A</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body3A">0 / 60</span></div></div>
+                            <div><textarea id="body3R" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm" placeholder="Reinforce the point and link back to the thesis."></textarea><div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">R</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="body3R">0 / 30</span></div></div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Conclusion -->
+                <section class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-baseline border-b pb-2 mb-4">
+                        <h2 class="text-2xl font-semibold">Conclusion</h2>
+                        <p class="font-mono text-sm font-semibold" id="conclusionTotalCounter">0 / 100</p>
+                    </div>
+                    <div id="conclusion-alert" class="hidden mb-4 p-3 bg-red-100 text-red-800 font-bold text-center rounded-md"></div>
+                     <div class="space-y-4">
+                        <div>
+                            <textarea id="concR" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Restate: Restate your thesis - main argument - in a new way."></textarea>
+                            <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">R</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="concR">0 / 30</span></div>
+                        </div>
+                         <div>
+                            <textarea id="concS" rows="3" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Summary: Briefly summarise your main arguments."></textarea>
+                            <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">S</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="concS">0 / 40</span></div>
+                        </div>
+                         <div>
+                            <textarea id="concI" rows="2" class="draft-input text-sm block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Implications: What is the main takeaway thought your reader should have?"></textarea>
+                            <div class="text-right mt-1 flex items-center justify-end gap-2"><span class="font-bold text-slate-500">I</span> <span class="word-count-badge font-mono text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700" data-target="concI">0 / 30</span></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ## Tab 3: Analysis & Refine ## -->
+            <div id="tab-content-3" class="tab-content hidden">
+                <section class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Analysis & Refine</h2>
+                    <div class="flex flex-wrap gap-4 mb-4">
+                        <button id="compileButton" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-md hover:bg-blue-700 transition-colors">🚀 Compile Draft & Run Analysis</button>
+                        <button id="recheckButton" class="bg-indigo-600 text-white font-semibold px-5 py-2 rounded-md hover:bg-indigo-700 transition-colors">Recheck Analysis</button>
+                        <button id="copyButton" class="bg-slate-700 text-white font-semibold px-5 py-2 rounded-md hover:bg-slate-800 transition-colors">📋 Copy Draft</button>
+                    </div>
+
+                    <!-- Analysis Legend -->
+                    <div class="text-sm grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2 mb-4 p-3 bg-slate-50 rounded-md">
+                        <div class="flex items-center"><span class="w-4 h-4 rounded-full mr-2" style="background-color: #fca5a5;"></span>Passive (<span id="passive-count">0</span>)</div>
+                        <div class="flex items-center"><span class="w-4 h-4 rounded-full mr-2" style="background-color: #bfdbfe;"></span>Bad Start (<span id="badStart-count">0</span>)</div>
+                        <div class="flex items-center"><span class="w-4 h-4 rounded-full mr-2" style="background-color: #fef08a;"></span>Stop Word (<span id="stopWord-count">0</span>)</div>
+                        <div class="flex items-center"><span class="w-4 h-4 rounded-full mr-2" style="background-color: #d8b4fe;"></span>Filler/Weak (<span id="filler-count">0</span>)</div>
+                        <div class="flex items-center"><span class="w-4 h-4 rounded-full mr-2" style="background-color: #a7f3d0;"></span>Basic Word (<span id="basic-count">0</span>)</div>
+                        <div class="flex items-center"><span class="font-extrabold mr-1">Bold</span>Repeated (<span id="repeated-count">0</span>)</div>
+                    </div>
+                    
+                    <!-- Performance Feedback -->
+                    <div id="performance-feedback" class="mt-4 p-4 rounded-md text-center bg-slate-50">
+                        <p class="text-lg font-semibold">Weak Word Analysis: <span id="weak-word-percentage">0%</span></p>
+                        <p id="feedback-statement" class="mt-1 text-slate-600">Run an analysis to see feedback on your writing.</p>
+                    </div>
+
+                    <div id="specific-feedback" class="mt-4 space-y-2 text-center font-semibold"></div>
+
+                    <div id="liveEditorWrapper" class="mt-4 border border-slate-300 rounded-md shadow-inner bg-white">
+                        <div id="liveEditor" contenteditable="true" spellcheck="true">
+                            <!-- User types here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- GLOBAL STATE & CONFIG ---
+        const state = {
+            wordTargets: {},
+            sourceCount: 0,
+        };
+
+        const wordLists = {
+            passive: new Set(['was', 'were', 'is', 'are', 'am', 'be', 'been', 'being', 'have', 'has', 'had', 'get', 'got', 'getting', 'gotten', "'m", "'s", "'re", "'ve", "'d", "hasn't", "haven't", "hadn't", "isn't", "aren't", "wasn't", "weren't", "won't", "wouldn't", "can't", "couldn't", "shouldn't", "wouldn't've"]),
+            badStarts: new Set(['the', 'it', 'a', 'an', 'he', 'she', 'his', 'her', 'this', 'these', 'those', 'they', 'there', 'then', 'i', 'my', 'we', 'our']),
+            stopWords: new Set(['and', 'but', 'or', 'so', 'because', 'of', 'to', 'for', 'with', 'at', 'in', 'on', 'by', 'from', 'if', 'when', 'where', 'while', 'than', 'as', 'that', 'the', 'which']),
+            filler: new Set(['very', 'really', 'just', 'only', 'kind of', 'sort of', 'maybe', 'perhaps', 'quite', 'rather', 'somehow', 'somewhat', 'suddenly', 'finally', 'basically', 'actually', 'literally', 'totally', 'completely', 'absolutely', 'obviously', 'definitely', 'clearly', 'simply', 'truly']),
+            basic: new Set(['big', 'small', 'good', 'bad', 'happy', 'sad', 'angry', 'nice', 'mean', 'fun', 'boring', 'fast', 'slow', 'hot', 'cold', 'smart', 'dumb', 'easy', 'hard', 'pretty', 'ugly', 'old', 'young', 'man', 'woman', 'boy', 'girl', 'thing', 'stuff', 'friend', 'child', 'people', 'house', 'car', 'dog', 'cat', 'run', 'walk', 'talk', 'look', 'say', 'go', 'do', 'make', 'see', 'give', 'take', 'find', 'know', 'think', 'want', 'like', 'love']),
+        };
+        const allInsignificantWords = new Set([...wordLists.passive, ...wordLists.badStarts, ...wordLists.stopWords, ...wordLists.filler, ...wordLists.basic]);
+
+        const styleMap = {
+            passive: { backgroundColor: '#fca5a5', color: '#991b1b' },
+            badStart: { backgroundColor: '#bfdbfe', color: '#1e40af' },
+            stopWord: { backgroundColor: '#fef08a', color: '#a16207' },
+            filler: { backgroundColor: '#d8b4fe', color: '#6b21a8' },
+            basic: { backgroundColor: '#a7f3d0', color: '#065f46' },
+            repeated: { fontWeight: '800' }
+        };
+
+        const iopcamData = {
+            Information: {
+                explanation: "What is the source explicitly saying (comprehension), implicitly suggesting (interpretation), and how does it corroborate (agree with) or contradict (conflict with) other sources?",
+                placeholder: "e.g., The newspaper reports Kelly's gang robbed the bank at Euroa. It implies the police were incompetent. This agrees with Source B, a government report..."
+            },
+            Origin: {
+                explanation: "Who created this source? What type of source is it (letter, photograph, etc.)? When and where was it produced?",
+                placeholder: "e.g., The Argus newspaper, a daily publication from Melbourne, published on December 15, 1878."
+            },
+            Perspective: {
+                explanation: "From whose point of view was the source made? What biases or viewpoints might influence how the source presents information?",
+                placeholder: "e.g., From the perspective of the Melbourne establishment, which viewed bushrangers as a major threat to law and order. It is biased against Kelly."
+            },
+            Context: {
+                explanation: "When was the source made? What events, ideas, or social conditions at that time influenced its creation?",
+                placeholder: "e.g., Created during a period of high social tension between poor rural selectors and the police/squatters in North-East Victoria."
+            },
+            Audience: {
+                explanation: "Who was the intended audience? (public, private, government) How might that have shaped the content?",
+                placeholder: "e.g., The general public of Victoria. The newspaper may have exaggerated the violence to sell more copies and create public outcry."
+            },
+            Motive: {
+                explanation: "Why was the source produced? (persuade, inform, record, propaganda) How does that motive affect its reliability?",
+                placeholder: "e.g., To inform the public about the robbery, but also to persuade readers that stronger police action was needed, making it less neutral."
+            }
+        };
+
+        // --- DOM ELEMENTS ---
+        const tabs = {
+            buttons: { '1': document.getElementById('tab-btn-1'), '2': document.getElementById('tab-btn-2'), '3': document.getElementById('tab-btn-3'), },
+            content: { '1': document.getElementById('tab-content-1'), '2': document.getElementById('tab-content-2'), '3': document.getElementById('tab-content-3'), }
+        };
+        const draftingInputs = document.querySelectorAll('.draft-input');
+        const liveEditor = document.getElementById('liveEditor');
+
+        // --- TAB SWITCHING LOGIC ---
+        Object.keys(tabs.buttons).forEach(tabKey => {
+            tabs.buttons[tabKey].addEventListener('click', () => {
+                Object.values(tabs.buttons).forEach(btn => btn.classList.remove('active'));
+                Object.values(tabs.content).forEach(content => content.classList.add('hidden'));
+                tabs.buttons[tabKey].classList.add('active');
+                tabs.content[tabKey].classList.remove('hidden');
+            });
+        });
+
+        // --- TAB 1: BUDGET & STRUCTURE ---
+        const wordCountGoalInput = document.getElementById('wordCountGoal');
+        document.getElementById('recalculateButton').addEventListener('click', calculateBudget);
+
+        function calculateBudget() {
+            const total = parseInt(wordCountGoalInput.value) || 0;
+            const budget = {
+                intro: Math.round(total * 0.12), body1: Math.round(total * 0.26), body2: Math.round(total * 0.26), body3: Math.round(total * 0.26), conclusion: Math.round(total * 0.10),
+            };
+            document.getElementById('introBudget').textContent = `${budget.intro} words`;
+            document.getElementById('body1Budget').textContent = `${budget.body1} words`;
+            document.getElementById('body2Budget').textContent = `${budget.body2} words`;
+            document.getElementById('body3Budget').textContent = `${budget.body3} words`;
+            document.getElementById('conclusionBudget').textContent = `${budget.conclusion} words`;
+            state.wordTargets = {
+                introH: Math.round(budget.intro * (3 / 12)), introC: Math.round(budget.intro * (5 / 12)), introT: Math.round(budget.intro * (4 / 12)),
+                body1P: Math.round(budget.body1 * (3 / 26)), body1E1: Math.round(budget.body1 * (8 / 26)), body1E2: Math.round(budget.body1 * (6 / 26)), body1A: Math.round(budget.body1 * (6 / 26)), body1R: Math.round(budget.body1 * (3 / 26)),
+                body2P: Math.round(budget.body2 * (3 / 26)), body2E1: Math.round(budget.body2 * (8 / 26)), body2E2: Math.round(budget.body2 * (6 / 26)), body2A: Math.round(budget.body2 * (6 / 26)), body2R: Math.round(budget.body2 * (3 / 26)),
+                body3P: Math.round(budget.body3 * (3 / 26)), body3E1: Math.round(budget.body3 * (8 / 26)), body3E2: Math.round(budget.body3 * (6 / 26)), body3A: Math.round(budget.body3 * (6 / 26)), body3R: Math.round(budget.body3 * (3 / 26)),
+                concR: Math.round(budget.conclusion * (3 / 10)), concS: Math.round(budget.conclusion * (4 / 10)), concI: Math.round(budget.conclusion * (3 / 10)),
+            };
+            draftingInputs.forEach(input => updateWordCount(input));
+            updateTotalCounters();
+        }
+
+        // Argument Syncing to Drafting Tab
+        const argumentDisplayMap = {
+            'argument1': document.getElementById('argument-display-1'),
+            'argument2': document.getElementById('argument-display-2'),
+            'argument3': document.getElementById('argument-display-3'),
+        };
+
+        function syncArguments() {
+            Object.keys(argumentDisplayMap).forEach((argId) => {
+                const argumentText = document.getElementById(argId).value;
+                const displayEl = argumentDisplayMap[argId];
+                if (argumentText.trim()) {
+                    displayEl.innerHTML = `You need to explain and improve your point: "<strong>${argumentText}</strong>"`;
+                    displayEl.classList.remove('hidden');
+                } else {
+                    displayEl.innerHTML = '';
+                    displayEl.classList.add('hidden');
+                }
+            });
+        }
+
+        Object.keys(argumentDisplayMap).forEach(argId => {
+            document.getElementById(argId).addEventListener('input', syncArguments);
+        });
+
+        // IOPCAM Source Tool
+        document.getElementById('addSourceButton').addEventListener('click', () => {
+            state.sourceCount++;
+            const container = document.getElementById('sourcesContainer');
+            const sourceDiv = document.createElement('div');
+            sourceDiv.className = 'border border-slate-200 p-4 rounded-lg';
+            sourceDiv.id = `source-block-${state.sourceCount}`;
+
+            const fieldsHtml = Object.keys(iopcamData).map(field => {
+                const data = iopcamData[field];
+                return `
+                <div class="border border-slate-200 p-3 rounded-lg">
+                    <label class="text-sm font-medium text-slate-700">${field}</label>
+                    <p class="text-xs text-slate-500 mt-1">${data.explanation}</p>
+                    <textarea rows="3" class="mt-2 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="${data.placeholder}"></textarea>
+                </div>`;
+            }).join('');
+            
+            sourceDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-semibold text-lg">Source ${state.sourceCount}</h3>
+                    <button data-target-id="${sourceDiv.id}" class="remove-source-btn bg-red-500 text-white font-semibold px-3 py-1 text-sm rounded-md hover:bg-red-600 transition-colors">Remove Source</button>
+                </div>
+                <div class="mb-4">
+                     <label class="text-sm font-medium text-slate-700">Source Title / Citation / URL</label>
+                     <input type="text" class="mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., McQuilton, J. (2001). The Kelly Outbreak. p. 77.">
+                </div>
+                <div class="space-y-3">${fieldsHtml}</div>`;
+            container.appendChild(sourceDiv);
+        });
+        
+        document.getElementById('sourcesContainer').addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('remove-source-btn')) {
+                const targetId = e.target.getAttribute('data-target-id');
+                const sourceToRemove = document.getElementById(targetId);
+                if (sourceToRemove) {
+                    sourceToRemove.remove();
+                }
+            }
+        });
+
+
+        // --- TAB 2: DRAFTING ---
+        function countWords(str) { return str.trim().split(/\s+/).filter(word => word.length > 0).length; }
+        function updateWordCount(textarea) {
+            const currentCount = countWords(textarea.value);
+            const targetId = textarea.id;
+            const targetCount = state.wordTargets[targetId] || 0;
+            const displayEl = document.querySelector(`[data-target="${targetId}"]`);
+            if (displayEl) {
+                displayEl.textContent = `${currentCount} / ${targetCount}`;
+                displayEl.classList.remove('bg-green-100', 'text-green-800', 'bg-orange-100', 'text-orange-800', 'bg-red-100', 'text-red-800', 'bg-slate-100', 'text-slate-700');
+                if (targetCount > 0) {
+                    const deviation = targetCount * 0.10;
+                    if (currentCount > targetCount + deviation) {
+                         displayEl.classList.add('bg-red-100', 'text-red-800');
+                    } else if (currentCount < targetCount - deviation) {
+                         displayEl.classList.add('bg-orange-100', 'text-orange-800');
+                    } else {
+                         displayEl.classList.add('bg-green-100', 'text-green-800');
+                    }
+                } else {
+                    displayEl.classList.add('bg-slate-100', 'text-slate-700');
+                }
+            }
+            updateTotalCounters();
+        }
+        
+        function updateTotalCounters() {
+            const totals = {
+                intro: { ids: ['introH', 'introC', 'introT'], el: 'introTotalCounter', target: (state.wordTargets.introH || 0) + (state.wordTargets.introC || 0) + (state.wordTargets.introT || 0), alertEl: 'intro-alert' },
+                body1: { ids: ['body1P', 'body1E1', 'body1E2', 'body1A', 'body1R'], el: 'body1TotalCounter', target: (state.wordTargets.body1P || 0) + (state.wordTargets.body1E1 || 0) + (state.wordTargets.body1E2 || 0) + (state.wordTargets.body1A || 0) + (state.wordTargets.body1R || 0), alertEl: 'body1-alert' },
+                body2: { ids: ['body2P', 'body2E1', 'body2E2', 'body2A', 'body2R'], el: 'body2TotalCounter', target: (state.wordTargets.body2P || 0) + (state.wordTargets.body2E1 || 0) + (state.wordTargets.body2E2 || 0) + (state.wordTargets.body2A || 0) + (state.wordTargets.body2R || 0), alertEl: 'body2-alert' },
+                body3: { ids: ['body3P', 'body3E1', 'body3E2', 'body3A', 'body3R'], el: 'body3TotalCounter', target: (state.wordTargets.body3P || 0) + (state.wordTargets.body3E1 || 0) + (state.wordTargets.body3E2 || 0) + (state.wordTargets.body3A || 0) + (state.wordTargets.body3R || 0), alertEl: 'body3-alert' },
+                conclusion: { ids: ['concR', 'concS', 'concI'], el: 'conclusionTotalCounter', target: (state.wordTargets.concR || 0) + (state.wordTargets.concS || 0) + (state.wordTargets.concI || 0), alertEl: 'conclusion-alert' },
+            };
+            for(const section in totals) {
+                let currentTotal = 0;
+                totals[section].ids.forEach(id => { currentTotal += countWords(document.getElementById(id).value); });
+                const targetEl = document.getElementById(totals[section].el);
+                if (targetEl) targetEl.textContent = `${currentTotal} / ${totals[section].target || '...'}`;
+
+                // Logic for the overage alert
+                const alertElement = document.getElementById(totals[section].alertEl);
+                const target = totals[section].target;
+                const threshold = target * 1.20;
+
+                if (alertElement) {
+                    if (currentTotal > threshold && target > 0) {
+                        const overage = currentTotal - target;
+                        alertElement.textContent = `Beware: This paragraph is now over ${overage} words of your allocated word count.`;
+                        alertElement.classList.remove('hidden');
+                    } else {
+                        alertElement.classList.add('hidden');
+                    }
+                }
+            }
+        }
+        draftingInputs.forEach(input => input.addEventListener('input', () => updateWordCount(input)));
+
+        // --- TAB 3: ANALYSIS & REFINE ---
+        function compileAndAnalyze() {
+            const introText = ['introH', 'introC', 'introT'].map(id => document.getElementById(id).value.trim()).join(' ');
+            const body1Text = ['body1P', 'body1E1', 'body1E2', 'body1A', 'body1R'].map(id => document.getElementById(id).value.trim()).join(' ');
+            const body2Text = ['body2P', 'body2E1', 'body2E2', 'body2A', 'body2R'].map(id => document.getElementById(id).value.trim()).join(' ');
+            const body3Text = ['body3P', 'body3E1', 'body3E2', 'body3A', 'body3R'].map(id => document.getElementById(id).value.trim()).join(' ');
+            const concText = ['concR', 'concS', 'concI'].map(id => document.getElementById(id).value.trim()).join(' ');
+            const fullText = [introText, body1Text, body2Text, body3Text, concText].filter(p => p.length > 0).join('\n\n').trim();
+            
+            runAnalysis(fullText);
+        }
+
+        function recheckAnalysis() { 
+            runAnalysis(liveEditor.innerText); 
+        }
+
+        function copyDraft() {
+             navigator.clipboard.writeText(liveEditor.innerText).then(() => {
+                alert('Draft copied to clipboard!');
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = liveEditor.innerText;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                alert('Draft copied to clipboard!');
+            });
+        }
+        function runAnalysis(text) {
+            const specificFeedbackEl = document.getElementById('specific-feedback');
+            specificFeedbackEl.innerHTML = '';
+            
+            let counts = { passive: 0, badStart: 0, stopWord: 0, filler: 0, basic: 0, repeated: 0 };
+            
+            const wordCounts = new Map();
+            const wordsForCounting = text.toLowerCase().match(/\b[\w']+\b/g) || [];
+            const sentenceCount = (text.match(/[.!?]+/g) || []).length;
+
+            wordsForCounting.forEach(word => {
+                if (!allInsignificantWords.has(word)) wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+            });
+            const repeatedWords = new Set();
+            for (const [word, count] of wordCounts.entries()) { if (count >= 5) repeatedWords.add(word); }
+            
+            let isStartOfSentence = true;
+            const tokens = text.split(/(\s+|[.,;!?()"“”—])/g);
+            
+            const styledTokens = tokens.map(token => {
+                const cleanWord = token.toLowerCase().replace(/[^a-z0-9']/g, '');
+                if (cleanWord.length === 0) {
+                    if (/[.!?]/.test(token)) isStartOfSentence = true;
+                    return token;
+                }
+
+                let styles = {};
+                if (wordLists.passive.has(cleanWord)) { styles = {...styles, ...styleMap.passive}; counts.passive++; }
+                if (wordLists.stopWords.has(cleanWord)) { styles = {...styles, ...styleMap.stopWord}; counts.stopWord++; }
+                if (wordLists.filler.has(cleanWord)) { styles = {...styles, ...styleMap.filler}; counts.filler++; }
+                if (wordLists.basic.has(cleanWord)) { styles = {...styles, ...styleMap.basic}; counts.basic++; }
+                if (repeatedWords.has(cleanWord)) { styles = {...styles, ...styleMap.repeated}; counts.repeated++; }
+                if (isStartOfSentence && wordLists.badStarts.has(cleanWord)) { styles = {...styles, ...styleMap.badStart}; counts.badStart++; }
+                
+                if (token.trim().length > 0) isStartOfSentence = false;
+                
+                if (Object.keys(styles).length > 0) {
+                    const styleString = Object.entries(styles).map(([key, value]) => `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`).join(';');
+                    return `<span style="${styleString}">${token}</span>`;
+                }
+                return token;
+            });
+            liveEditor.innerHTML = styledTokens.join('').replace(/\n\n/g, '<br><br>');
+
+            // Update counts in the legend
+            document.getElementById('passive-count').innerText = counts.passive;
+            document.getElementById('badStart-count').innerText = counts.badStart;
+            document.getElementById('stopWord-count').innerText = counts.stopWord;
+            document.getElementById('filler-count').innerText = counts.filler;
+            document.getElementById('basic-count').innerText = counts.basic;
+            document.getElementById('repeated-count').innerText = counts.repeated;
+
+            // Calculate and display performance feedback
+            const totalWords = wordsForCounting.length;
+            const weakWordsTotal = counts.passive + counts.badStart + counts.stopWord + counts.filler + counts.basic;
+            const percentage = totalWords > 0 ? Math.round((weakWordsTotal / totalWords) * 100) : 0;
+            
+            const feedbackEl = document.getElementById('performance-feedback');
+            const statementEl = document.getElementById('feedback-statement');
+            document.getElementById('weak-word-percentage').innerText = `${percentage}%`;
+
+            feedbackEl.className = 'mt-4 p-4 rounded-md text-center'; // Reset classes
+            if (percentage <= 28) {
+                feedbackEl.classList.add('bg-green-100', 'text-green-800');
+                statementEl.innerText = "Excellent! This is a senior-level piece of writing with very few weak words.";
+            } else if (percentage <= 35) {
+                feedbackEl.classList.add('bg-blue-100', 'text-blue-800');
+                statementEl.innerText = "Good! This is solid writing for a middle-school level. Try to replace some of the highlighted words.";
+            } else if (percentage <= 45) {
+                feedbackEl.classList.add('bg-yellow-100', 'text-yellow-800');
+                statementEl.innerText = "Developing! This is typical for a junior-level essay. Focus on improving word choice.";
+            } else {
+                feedbackEl.classList.add('bg-red-100', 'text-red-800');
+                statementEl.innerText = "Needs Improvement. This essay has a high number of weak words. Review the highlighted words to make your writing stronger.";
+            }
+
+            // Specific feedback messages
+            if (totalWords > 0 && (counts.passive / totalWords) > 0.04) {
+                specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-red-100 text-red-800"><strong>Passive Writing Alert:</strong> Too much red passive writing (over 4% of word count) dramatically reduces quality of expression.</div>`;
+            }
+            if (sentenceCount > 0 && (counts.badStart / sentenceCount) > 0.5) {
+                specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-blue-100 text-blue-800"><strong>Weak Starts Alert:</strong> Too many sentences (over 50% of sentence starts) begin with weak words, which can produce weak paragraphs.</div>`;
+            }
+        }
+
+        document.getElementById('compileButton').addEventListener('click', compileAndAnalyze);
+        document.getElementById('recheckButton').addEventListener('click', recheckAnalysis);
+        document.getElementById('copyButton').addEventListener('click', copyDraft);
+        
+        // --- INITIALIZATION ---
+        calculateBudget();
+        syncArguments();
+        draftingInputs.forEach(input => updateWordCount(input));
+    });
+    </script>
+</body>
+</html>
+
