@@ -374,6 +374,19 @@
                 body3P: Math.round(budget.body3 * (3 / 26)), body3E1: Math.round(budget.body3 * (8 / 26)), body3E2: Math.round(budget.body3 * (6 / 26)), body3A: Math.round(budget.body3 * (6 / 26)), body3R: Math.round(budget.body3 * (3 / 26)),
                 concR: Math.round(budget.conclusion * (3 / 10)), concS: Math.round(budget.conclusion * (4 / 10)), concI: Math.round(budget.conclusion * (3 / 10)),
             };
+
+            // Dynamically set textarea rows based on word count
+            Object.keys(state.wordTargets).forEach(targetId => {
+                const textarea = document.getElementById(targetId);
+                const targetCount = state.wordTargets[targetId];
+                if (textarea && targetCount > 0) {
+                    const newRows = Math.max(2, Math.round(targetCount / 8));
+                    textarea.rows = newRows;
+                } else if (textarea) {
+                    textarea.rows = 2; // Default to 2 if no target
+                }
+            });
+
             draftingInputs.forEach(input => updateWordCount(input));
             updateTotalCounters();
         }
@@ -614,7 +627,7 @@
                 specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-red-100 text-red-800"><strong>Passive Writing Alert:</strong> Too much red passive writing (over 4% of word count) dramatically reduces quality of expression.</div>`;
             }
             if (sentenceCount > 0 && (counts.badStart / sentenceCount) > 0.5) {
-                specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-blue-100 text-blue-800"><strong>Weak Starts Alert:</strong> Too many sentences (over 50% of sentence starts) begin with weak words, which can produce weak paragraphs.</div>`;
+                specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-blue-100 text-blue-800"><strong>Weak Starts Alert:</strong> Too many sentences (over 50% of sentence starts) begin with blue weak words, which can produce weak paragraphs.</div>`;
             }
         }
 
