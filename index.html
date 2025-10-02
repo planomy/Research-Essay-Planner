@@ -15,8 +15,8 @@
 
         textarea { resize: vertical; }
 
-        /* Styles for the live editor */
-        #liveEditor {
+        /* Styles for the live editors */
+        #liveEditor, #iopcamEditor {
             min-height: 500px;
             padding: 1rem;
             font-size: 1.125rem; /* text-lg */
@@ -25,12 +25,16 @@
             word-wrap: break-word;
             border-radius: 0.375rem; /* rounded-md */
         }
+        #iopcamEditor {
+            min-height: 400px;
+            font-size: 1rem; /* text-base */
+        }
 
-        #liveEditor:focus {
+        #liveEditor:focus, #iopcamEditor:focus {
              outline: 2px solid #3b82f6;
         }
 
-        #liveEditor span {
+        #liveEditor span, #iopcamEditor span {
             padding: 1px 0;
             border-radius: 3px;
         }
@@ -42,16 +46,16 @@
     <div class="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
         <!-- Header -->
         <header class="text-center mb-6">
-            <h1 class="text-4xl font-bold text-slate-800">Mr C's Research Essay Planner 📝</h1>
-            <p class="text-slate-600 mt-2">A tool to help plan, draft, and analyze academic essays.</p>
+            <h1 class="text-4xl font-bold text-slate-800">Mr C's Research Essay Planner</h1>
+            <p class="text-slate-600 mt-2">A tool to help plan, draft, and analyse research essays.</p>
         </header>
 
         <!-- Tab Navigation -->
         <div class="mb-6 border-b border-slate-300">
             <nav class="flex space-x-2" aria-label="Tabs">
                 <button id="tab-btn-1" class="tab-button active text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">1. Budget & Structure</button>
-                <button id="tab-btn-2" class="tab-button text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">2. Drafting (PEEAR)</button>
-                <button id="tab-btn-3" class="tab-button text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">3. Analysis & Refine</button>
+                <button id="tab-btn-2" class="tab-button text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">2. Draft with PEEAR</button>
+                <button id="tab-btn-3" class="tab-button text-slate-700 hover:bg-slate-200 font-medium px-4 py-2 rounded-t-lg transition-colors">3. Analyse & Refine</button>
             </nav>
         </div>
 
@@ -247,11 +251,11 @@
             <!-- ## Tab 3: Analysis & Refine ## -->
             <div id="tab-content-3" class="tab-content hidden">
                 <section class="bg-white p-6 rounded-lg shadow-sm">
-                    <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Analysis & Refine</h2>
+                    <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Main Essay Analysis</h2>
                     <div class="flex flex-wrap gap-4 mb-4">
-                        <button id="compileButton" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-md hover:bg-blue-700 transition-colors">🚀 Compile Draft & Run Analysis</button>
+                        <button id="compileButton" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-md hover:bg-blue-700 transition-colors">Compile Draft & Run Analysis</button>
                         <button id="recheckButton" class="bg-indigo-600 text-white font-semibold px-5 py-2 rounded-md hover:bg-indigo-700 transition-colors">Recheck Analysis</button>
-                        <button id="copyButton" class="bg-slate-700 text-white font-semibold px-5 py-2 rounded-md hover:bg-slate-800 transition-colors">📋 Copy Draft</button>
+                        <button id="copyButton" class="bg-slate-700 text-white font-semibold px-5 py-2 rounded-md hover:bg-slate-800 transition-colors">Copy Draft</button>
                     </div>
 
                     <!-- Analysis Legend -->
@@ -275,6 +279,19 @@
                     <div id="liveEditorWrapper" class="mt-4 border border-slate-300 rounded-md shadow-inner bg-white">
                         <div id="liveEditor" contenteditable="true" spellcheck="true">
                             <!-- User types here -->
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-semibold border-b pb-2 mb-4">IOPCAM Notes Analysis</h2>
+                    <div class="flex flex-wrap gap-4 mb-4">
+                         <button id="compileIopcamButton" class="bg-teal-600 text-white font-bold px-5 py-2 rounded-md hover:bg-teal-700 transition-colors">Compile & Analyze IOPCAM Notes</button>
+                         <button id="copyIopcamButton" class="bg-slate-700 text-white font-semibold px-5 py-2 rounded-md hover:bg-slate-800 transition-colors">Copy IOPCAM Notes</button>
+                    </div>
+                    <div id="iopcamEditorWrapper" class="mt-4 border border-slate-300 rounded-md shadow-inner bg-white">
+                        <div id="iopcamEditor" contenteditable="true" spellcheck="true">
+                            <!-- Compiled IOPCAM notes will appear here -->
                         </div>
                     </div>
                 </section>
@@ -342,6 +359,7 @@
         };
         const draftingInputs = document.querySelectorAll('.draft-input');
         const liveEditor = document.getElementById('liveEditor');
+        const iopcamEditor = document.getElementById('iopcamEditor');
 
         // --- TAB SWITCHING LOGIC ---
         Object.keys(tabs.buttons).forEach(tabKey => {
@@ -421,7 +439,7 @@
             state.sourceCount++;
             const container = document.getElementById('sourcesContainer');
             const sourceDiv = document.createElement('div');
-            sourceDiv.className = 'border border-slate-200 p-4 rounded-lg';
+            sourceDiv.className = 'source-block border border-slate-200 p-4 rounded-lg';
             sourceDiv.id = `source-block-${state.sourceCount}`;
 
             const fieldsHtml = Object.keys(iopcamData).map(field => {
@@ -430,7 +448,7 @@
                 <div class="border border-slate-200 p-3 rounded-lg">
                     <label class="text-sm font-medium text-slate-700">${field}</label>
                     <p class="text-xs text-slate-500 mt-1">${data.explanation}</p>
-                    <textarea rows="3" class="mt-2 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="${data.placeholder}"></textarea>
+                    <textarea data-iopcam-field="${field}" rows="3" class="mt-2 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="${data.placeholder}"></textarea>
                 </div>`;
             }).join('');
             
@@ -441,7 +459,7 @@
                 </div>
                 <div class="mb-4">
                      <label class="text-sm font-medium text-slate-700">Source Title / Citation / URL</label>
-                     <input type="text" class="mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., McQuilton, J. (2001). The Kelly Outbreak. p. 77.">
+                     <input type="text" class="source-title-input mt-1 block w-full rounded-md border border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., McQuilton, J. (2001). The Kelly Outbreak. p. 77.">
                 </div>
                 <div class="space-y-3">${fieldsHtml}</div>`;
             container.appendChild(sourceDiv);
@@ -498,7 +516,6 @@
                 const targetEl = document.getElementById(totals[section].el);
                 if (targetEl) targetEl.textContent = `${currentTotal} / ${totals[section].target || '...'}`;
 
-                // Logic for the overage alert
                 const alertElement = document.getElementById(totals[section].alertEl);
                 const target = totals[section].target;
                 const threshold = target * 1.20;
@@ -525,11 +542,11 @@
             const concText = ['concR', 'concS', 'concI'].map(id => document.getElementById(id).value.trim()).join(' ');
             const fullText = [introText, body1Text, body2Text, body3Text, concText].filter(p => p.length > 0).join('\n\n').trim();
             
-            runAnalysis(fullText);
+            runAnalysis(fullText, liveEditor, true);
         }
 
         function recheckAnalysis() { 
-            runAnalysis(liveEditor.innerText); 
+            runAnalysis(liveEditor.innerText, liveEditor, true); 
         }
 
         function copyDraft() {
@@ -546,10 +563,37 @@
                 alert('Draft copied to clipboard!');
             });
         }
-        function runAnalysis(text) {
-            const specificFeedbackEl = document.getElementById('specific-feedback');
-            specificFeedbackEl.innerHTML = '';
-            
+        
+        function compileAndAnalyzeIOPCAM() {
+            const sourceBlocks = document.querySelectorAll('.source-block');
+            let fullText = '';
+            sourceBlocks.forEach((block, index) => {
+                const titleInput = block.querySelector('.source-title-input');
+                const title = titleInput ? titleInput.value.trim() : `Source ${index + 1}`;
+                fullText += `--- SOURCE: ${title} ---\n\n`;
+
+                const textareas = block.querySelectorAll('textarea');
+                textareas.forEach(ta => {
+                    const field = ta.dataset.iopcamField;
+                    const text = ta.value.trim();
+                    if (text) {
+                        fullText += `${field.toUpperCase()}:\n${text}\n\n`;
+                    }
+                });
+            });
+            runAnalysis(fullText.trim(), iopcamEditor, false); // No main essay feedback
+        }
+        
+        function copyIOPCAMNotes() {
+            navigator.clipboard.writeText(iopcamEditor.innerText).then(() => {
+                alert('IOPCAM notes copied to clipboard!');
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+
+        function runAnalysis(text, editorElement, isMainEssay) {
             let counts = { passive: 0, badStart: 0, stopWord: 0, filler: 0, basic: 0, repeated: 0 };
             
             const wordCounts = new Map();
@@ -573,12 +617,12 @@
                 }
 
                 let styles = {};
-                if (wordLists.passive.has(cleanWord)) { styles = {...styles, ...styleMap.passive}; counts.passive++; }
-                if (wordLists.stopWords.has(cleanWord)) { styles = {...styles, ...styleMap.stopWord}; counts.stopWord++; }
-                if (wordLists.filler.has(cleanWord)) { styles = {...styles, ...styleMap.filler}; counts.filler++; }
-                if (wordLists.basic.has(cleanWord)) { styles = {...styles, ...styleMap.basic}; counts.basic++; }
-                if (repeatedWords.has(cleanWord)) { styles = {...styles, ...styleMap.repeated}; counts.repeated++; }
-                if (isStartOfSentence && wordLists.badStarts.has(cleanWord)) { styles = {...styles, ...styleMap.badStart}; counts.badStart++; }
+                if (wordLists.passive.has(cleanWord)) { styles = {...styles, ...styleMap.passive}; if (isMainEssay) counts.passive++; }
+                if (wordLists.stopWords.has(cleanWord)) { styles = {...styles, ...styleMap.stopWord}; if (isMainEssay) counts.stopWord++; }
+                if (wordLists.filler.has(cleanWord)) { styles = {...styles, ...styleMap.filler}; if (isMainEssay) counts.filler++; }
+                if (wordLists.basic.has(cleanWord)) { styles = {...styles, ...styleMap.basic}; if (isMainEssay) counts.basic++; }
+                if (repeatedWords.has(cleanWord)) { styles = {...styles, ...styleMap.repeated}; if (isMainEssay) counts.repeated++; }
+                if (isStartOfSentence && wordLists.badStarts.has(cleanWord)) { styles = {...styles, ...styleMap.badStart}; if (isMainEssay) counts.badStart++; }
                 
                 if (token.trim().length > 0) isStartOfSentence = false;
                 
@@ -588,7 +632,9 @@
                 }
                 return token;
             });
-            liveEditor.innerHTML = styledTokens.join('').replace(/\n\n/g, '<br><br>');
+            editorElement.innerHTML = styledTokens.join('').replace(/\n\n/g, '<br><br>');
+
+            if (!isMainEssay) return; // Stop here if not the main essay
 
             // Update counts in the legend
             document.getElementById('passive-count').innerText = counts.passive;
@@ -623,17 +669,21 @@
             }
 
             // Specific feedback messages
+            const specificFeedbackEl = document.getElementById('specific-feedback');
+            specificFeedbackEl.innerHTML = '';
             if (totalWords > 0 && (counts.passive / totalWords) > 0.04) {
                 specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-red-100 text-red-800"><strong>Passive Writing Alert:</strong> Too much red passive writing (over 4% of word count) dramatically reduces quality of expression.</div>`;
             }
             if (sentenceCount > 0 && (counts.badStart / sentenceCount) > 0.5) {
-                specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-blue-100 text-blue-800"><strong>Weak Starts Alert:</strong> Too many sentences (over 50% of sentence starts) begin with blue weak words, which can produce weak paragraphs.</div>`;
+                specificFeedbackEl.innerHTML += `<div class="p-3 rounded-md bg-blue-100 text-blue-800"><strong>Weak Starts Alert:</strong> Too many sentences (over 50% of sentence starts) begin with weak words, which can produce weak paragraphs.</div>`;
             }
         }
 
         document.getElementById('compileButton').addEventListener('click', compileAndAnalyze);
         document.getElementById('recheckButton').addEventListener('click', recheckAnalysis);
         document.getElementById('copyButton').addEventListener('click', copyDraft);
+        document.getElementById('compileIopcamButton').addEventListener('click', compileAndAnalyzeIOPCAM);
+        document.getElementById('copyIopcamButton').addEventListener('click', copyIOPCAMNotes);
         
         // --- INITIALIZATION ---
         calculateBudget();
